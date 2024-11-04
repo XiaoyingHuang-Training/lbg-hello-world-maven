@@ -1,20 +1,33 @@
-pipeline{
+pipeline {
     agent any
 
-    tools{
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
         maven "M3"
     }
 
-    stages{
-        stage("Build"){
-            steps{
-                sh "mv -Dmaven.test.failure.ignore=true clean pakage"
+    stages {
+        stage('Checkout') {
+            steps {
+                // Get some code from a GitHub repository
+                git branch:"main", url:'https://github.com/XiaoyingHuang-Training/lbg-hello-world-maven'
             }
         }
-        stage("Test"){
+        stage('Compile'){
             steps{
-                sh "mvn test"
+                sh "mvn clean compile"
             }
         }
+        stage('Test'){
+            steps{
+                sh'mvn -Dmaven.compile.skip test'
+            }
+        }
+        stage('Package'){
+            steps{
+                sh 'mvn -Dmaven.test.skip -Dmaven.compile.skip package'
+            }
+        }
+        
     }
 }
